@@ -1,0 +1,14 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+server:
+  port: 4005
+
+
+spring:
+  application:
+    name = service-registery

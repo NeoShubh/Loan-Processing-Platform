@@ -1,0 +1,16 @@
+package com.example.loanapplication.modules.documentmodule.enums;
+
+public enum DocumentType {
+    PAN,
+    AADHAR,
+    BANK_STATMENT,
+    ITR,
+    GSTN_DOCUMENT,
+    FINANCIAL_DOCUMENT_YEAR_ONE,
+    FINANCIAL_DOCUMENT_YEAR_SECOND,
+    FINANCIAL_DOCUMENT_YEAR_THREE,
+    COLLATERAL_RESIDENTIAL,
+    COLLATERAL_COMMERCIAL,
+    COLLATERAL_INDUSTRIAL,
+    COLLATERAL_NAPLOT
+}

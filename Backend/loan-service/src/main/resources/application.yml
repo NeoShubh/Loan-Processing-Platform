@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/loan_db
+    password: root
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+  application:
+    name: loan-service
+server:
+  port: '4002'
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registery: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:4005/eureka

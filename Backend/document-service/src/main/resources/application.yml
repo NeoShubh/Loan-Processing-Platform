@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/document_db
+    password: root
+  application:
+    name: document-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+server:
+  port: '4003'
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registery: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:4005/eureka

@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/auth_user_db
+    password: root
+  application:
+    name: auth-user-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+server:
+  port: '4001'
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registery: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:4005/eureka

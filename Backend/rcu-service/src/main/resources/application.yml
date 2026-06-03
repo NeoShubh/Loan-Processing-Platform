@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: rcu-service
+  data:
+    mongodb:
+      database: rcu_db
+      port: '27017'
+      host: localhost
+server:
+  port: '4004'
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registery: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:4005/eureka
