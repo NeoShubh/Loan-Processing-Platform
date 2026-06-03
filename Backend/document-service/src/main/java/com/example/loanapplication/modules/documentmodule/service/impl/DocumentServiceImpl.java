@@ -1,20 +1,17 @@
 package com.example.loanapplication.modules.documentmodule.service.impl;
 
-
 import com.example.loanapplication.exception.document.DocumentFormatNotAllowedException;
 import com.example.loanapplication.exception.document.DocumentNotFoundException;
 import com.example.loanapplication.exception.document.InvalidDocumentTypeException;
 import com.example.loanapplication.modules.documentmodule.dto.DocumentStatusDTO.DocumentStatusRequestDTO;
-import com.example.loanapplication.modules.documentmodule.dto.WholeDocuementDTO.DocumentResponseDTO;
 import com.example.loanapplication.modules.documentmodule.dto.WholeDocuementDTO.DocumentRequestDTO;
-
+import com.example.loanapplication.modules.documentmodule.dto.WholeDocuementDTO.DocumentResponseDTO;
 import com.example.loanapplication.modules.documentmodule.entity.Document;
 import com.example.loanapplication.modules.documentmodule.enums.DocumentStatus;
 import com.example.loanapplication.modules.documentmodule.enums.DocumentType;
 import com.example.loanapplication.modules.documentmodule.repository.DocumentRepository;
 import com.example.loanapplication.modules.documentmodule.service.DocumentService;
 import com.example.loanapplication.modules.documentmodule.service.FileStorageService;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,11 +34,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentResponseDTO createDocument(MultipartFile file, UUID loanApplicationId, UUID applicantId, String documentType, UUID uploadedBy) {
-
-//        LoanApplication loanApplication = LoanApplication.builder().loanID(loanApplicationId).build();
-//        Applicant applicant = Applicant.builder().applicantId(applicantId).build();
-
-
         if (!file.getContentType().equals("application/pdf")) {
             throw new DocumentFormatNotAllowedException("Only PDF format is allowed");
         }
@@ -102,7 +94,7 @@ public class DocumentServiceImpl implements DocumentService {
                     .documentId(documents.get(i).getDocumentId())
                     .loanApplication(documents.get(i).getLoanId())
                     .applicant(documents.get(i).getApplicantId() != null ?
-                            documents.get(i).getApplicantId(): null)
+                            documents.get(i).getApplicantId() : null)
                     .documentStatus(documents.get(i).getDocumentStatus())
                     .documentType(documents.get(i).getDocumentType())
                     .fileUrl(documents.get(i).getFileUrl())
@@ -242,7 +234,7 @@ public class DocumentServiceImpl implements DocumentService {
         return DocumentResponseDTO.builder()
                 .documentId(document.getDocumentId())
                 .loanApplication(document.getLoanId())
-                .applicant(document.getApplicantId()!= null ?
+                .applicant(document.getApplicantId() != null ?
                         document.getApplicantId() : null)
                 .documentStatus(document.getDocumentStatus())
                 .documentType(document.getDocumentType())

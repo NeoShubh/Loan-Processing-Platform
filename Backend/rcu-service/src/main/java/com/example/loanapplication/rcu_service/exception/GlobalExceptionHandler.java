@@ -3,6 +3,7 @@ package com.example.loanapplication.rcu_service.exception;
 
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseIsNotAssignedException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseNotPresentException;
+import com.example.loanapplication.rcu_service.exception.rcuCase.RCUDocumentsNotFoundException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUStatusCanNotBeChangedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RCUCaseNotPresentException.class)
     public ResponseEntity<?> handleRCUCaseNotPresentException(RCUCaseNotPresentException ex) {
+        ApiError apiError = new ApiError(ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(RCUDocumentsNotFoundException.class)
+    public ResponseEntity<?> handleRCUDocumentsNotFoundException(RCUDocumentsNotFoundException ex) {
         ApiError apiError = new ApiError(ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }

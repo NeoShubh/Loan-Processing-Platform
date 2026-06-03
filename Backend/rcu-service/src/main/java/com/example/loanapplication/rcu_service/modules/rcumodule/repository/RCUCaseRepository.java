@@ -2,7 +2,7 @@ package com.example.loanapplication.rcu_service.modules.rcumodule.repository;
 
 
 import com.example.loanapplication.rcu_service.modules.rcumodule.entity.RCUCase;
-import com.example.loanapplication.rcu_service.modules.rcumodule.enums.RCUStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

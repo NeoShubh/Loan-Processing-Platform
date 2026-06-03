@@ -1,13 +1,14 @@
 package com.example.loanapplication.rcu_service.modules.rcumodule.service.impl;
 
 
-import com.example.loanapplication.rcu_service.exception.rcuCase.ActiveRCUCaseFoundException;
-import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseIsNotAssignedException;
-import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseNotPresentException;
-import com.example.loanapplication.rcu_service.exception.rcuCase.RCUStatusCanNotBeChangedException;
-import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.RCUCaseResponseDTO;
+import com.example.loanapplication.rcu_service.exception.rcuCase.*;
+import com.example.loanapplication.rcu_service.external.services.DocumentService;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.DocumentStatusDTO.DocumentStatusRequestDTO;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.WholeDocuementDTO.DocumentResponseDTO;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.rcuDTOs.RCUCaseResponseDTO;
 import com.example.loanapplication.rcu_service.modules.rcumodule.entity.RCUCase;
-import com.example.loanapplication.rcu_service.modules.rcumodule.enums.RCUStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.document.DocumentStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import com.example.loanapplication.rcu_service.modules.rcumodule.repository.RCUCaseRepository;
 import com.example.loanapplication.rcu_service.modules.rcumodule.service.RCUService;
 import org.springframework.stereotype.Service;
@@ -21,16 +22,14 @@ import java.util.UUID;
 public class RCUServiceImpl implements RCUService {
 
     private final RCUCaseRepository rcuCaseRepository;
-//    private final DocumentService documentService;
+    private final DocumentService documentService;
 
-//    public RCUServiceImpl(RCUCaseRepository rcuCaseRepository, DocumentService documentService) {
-//        this.rcuCaseRepository = rcuCaseRepository;
-//        this.documentService = documentService;
-//    }
+    public RCUServiceImpl(RCUCaseRepository rcuCaseRepository, DocumentService documentService) {
+        this.rcuCaseRepository = rcuCaseRepository;
+        this.documentService = documentService;
+    }
 
-public RCUServiceImpl(RCUCaseRepository rcuCaseRepository) {
-    this.rcuCaseRepository = rcuCaseRepository;
-}
+
 
     @Override
     public RCUCaseResponseDTO CreateRCUCase(UUID loanId) {
@@ -103,47 +102,47 @@ public RCUServiceImpl(RCUCaseRepository rcuCaseRepository) {
                 .build();
     }
 
-//
-//    @Override
-//    public DocumentResponseDTO updateDocumentStatusAndRemarks(String documentId, DocumentStatusRequestDTO documentStatusRequestDTO) {
-//        return documentService.updateDocumentStatus(documentId, documentStatusRequestDTO);
-//    }
-//
-//    @Override
-//    public DocumentResponseDTO getDocument(String documentId) {
-//        return documentService.getDocumentById(UUID.fromString(documentId));
-//    }
-//
-//    @Override
-//    public List<DocumentResponseDTO> getAllDocumentByApplicant(String applicantId) {
-//        return documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId));
-//    }
 
-//    @Override
-//    public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
-//        List<Document> documents = documentService.getDocumentsByLoanId(UUID.fromString(loanId));
-//        List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
-//
-//        for (int i = 0; i < documents.size(); i++) {
-//            DocumentResponseDTO singleDocumentResponseDTO = DocumentResponseDTO.builder()
-//                    .documentId(documents.get(i).getDocumentId())
-//                    .loanApplication(documents.get(i).getLoanApplication().getLoanID())
-//                    .applicant(documents.get(i).getApplicant() != null ?
-//                            documents.get(i).getApplicant().getApplicantId() : null)
-//                    .documentStatus(documents.get(i).getDocumentStatus())
-//                    .documentType(documents.get(i).getDocumentType())
-//                    .fileUrl(documents.get(i).getFileUrl())
-//                    .uploadedBy(documents.get(i).getUploadedBy().getUserID())
-//                    .verifiedBy(documents.get(i).getVerifiedBy() != null ? documents.get(i).getVerifiedBy().getUserID() : null)
-//                    .verifiedAt(documents.get(i).getVerifiedAt())
-//                    .uploadedAt(documents.get(i).getUploadedAt())
-//                    .updatedAt(documents.get(i).getUpdatedAt())
-//                    .remarks(documents.get(i).getRemarks() != null ? documents.get(i).getRemarks() : null).build();
-//
-//            documentResponseList.add(singleDocumentResponseDTO);
-//        }
-//        return documentResponseList;
-//    }
+    @Override
+    public DocumentResponseDTO updateDocumentStatusAndRemarks(String documentId, DocumentStatusRequestDTO documentStatusRequestDTO) {
+        return documentService.updateDocumentStatus(documentId, documentStatusRequestDTO).getBody();
+    }
+
+    @Override
+    public DocumentResponseDTO getDocument(String documentId) {
+        return documentService.getDocumentById(UUID.fromString(documentId)).getBody();
+    }
+
+    @Override
+    public List<DocumentResponseDTO> getAllDocumentByApplicant(String applicantId) {
+        return documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId)).getBody();
+    }
+
+    @Override
+    public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
+        List<DocumentResponseDTO> documents = documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getBody();
+        List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
+
+        for (int i = 0; i < documents.size(); i++) {
+            DocumentResponseDTO singleDocumentResponseDTO = DocumentResponseDTO.builder()
+                    .documentId(documents.get(i).getDocumentId())
+                    .loanApplication(documents.get(i).getLoanApplication())
+                    .applicant(documents.get(i).getApplicant() != null ?
+                            documents.get(i).getApplicant() : null)
+                    .documentStatus(documents.get(i).getDocumentStatus())
+                    .documentType(documents.get(i).getDocumentType())
+                    .fileUrl(documents.get(i).getFileUrl())
+                    .uploadedBy(documents.get(i).getUploadedBy())
+                    .verifiedBy(documents.get(i).getVerifiedBy() != null ? documents.get(i).getVerifiedBy(): null)
+                    .verifiedAt(documents.get(i).getVerifiedAt())
+                    .uploadedAt(documents.get(i).getUploadedAt())
+                    .updatedAt(documents.get(i).getUpdatedAt())
+                    .remarks(documents.get(i).getRemarks() != null ? documents.get(i).getRemarks() : null).build();
+
+            documentResponseList.add(singleDocumentResponseDTO);
+        }
+        return documentResponseList;
+    }
 
     @Override
     public RCUCaseResponseDTO updateRCUCaseStatus(UUID rcuCaseId, RCUStatus rcuStatus) {
@@ -194,32 +193,32 @@ public RCUServiceImpl(RCUCaseRepository rcuCaseRepository) {
                 .closedAt(rcuCase.getClosedAt())
                 .build();
     }
-//
-//    @Override
-//    public void RCUCaseDecisionMaking(UUID rcuCaseId) {
-//        RCUCase rcuCase = rcuCaseRepository.findById(rcuCaseId).orElseThrow(() ->
-//                new RCUCaseNotPresentException("RCU Case Not Found"));
-//
-//        if (rcuCase.getAssignedTo() == null) {
-//            throw new RCUStatusCanNotBeChangedException("RCU User not assigned");
-//        }
-//        System.out.println("Loan ID in RCU : " + rcuCase.getLoan().getLoanID());
-//        List<Document> documentList = documentService.getDocumentsByLoanId(rcuCase.getLoan().getLoanID());
-//        System.out.print(documentList);
-//        if (documentList.isEmpty()) {
-//            throw new DocumentNotFoundException("Document List is not Found");
-//        }
-//        boolean anyRejected = documentList.stream()
-//                .anyMatch(doc -> doc.getDocumentStatus() == DocumentStatus.REJECTED);
-//
-//        boolean allApproved = documentList.stream()
-//                .allMatch(doc -> doc.getDocumentStatus() == DocumentStatus.VERIFIED);
-//
-//        if (anyRejected)
-//            updateRCUCaseStatus(rcuCase.getRcuCaseId(), RCUStatus.REJECTED);
-//        else if (allApproved && !documentList.isEmpty())
-//            updateRCUCaseStatus(rcuCase.getRcuCaseId(), RCUStatus.APPROVED);
-//    }
+
+    @Override
+    public void RCUCaseDecisionMaking(UUID rcuCaseId) {
+        RCUCase rcuCase = rcuCaseRepository.findById(rcuCaseId).orElseThrow(() ->
+                new RCUCaseNotPresentException("RCU Case Not Found"));
+
+        if (rcuCase.getAssignedTo() == null) {
+            throw new RCUStatusCanNotBeChangedException("RCU User not assigned");
+        }
+        System.out.println("Loan ID in RCU : " + rcuCase.getLoanId());
+        List<DocumentResponseDTO> documentList = documentService.getAllDocumentsByLoanId(rcuCase.getLoanId()).getBody();
+        System.out.print(documentList);
+        if (documentList.isEmpty()) {
+            throw new RCUDocumentsNotFoundException("Documents List for RCU case are not Found");
+        }
+        boolean anyRejected = documentList.stream()
+                .anyMatch(doc -> doc.getDocumentStatus() == DocumentStatus.REJECTED);
+
+        boolean allApproved = documentList.stream()
+                .allMatch(doc -> doc.getDocumentStatus() == DocumentStatus.VERIFIED);
+
+        if (anyRejected)
+            updateRCUCaseStatus(rcuCase.getRcuCaseId(), RCUStatus.REJECTED);
+        else if (allApproved && !documentList.isEmpty())
+            updateRCUCaseStatus(rcuCase.getRcuCaseId(), RCUStatus.APPROVED);
+    }
 
     @Override
     public boolean CheckRCUCaseExistsForLoanId(UUID loanId, RCUStatus rcuStatus) {

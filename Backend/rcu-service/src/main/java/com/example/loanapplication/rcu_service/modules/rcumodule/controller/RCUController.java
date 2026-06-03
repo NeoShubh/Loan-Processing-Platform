@@ -2,8 +2,10 @@ package com.example.loanapplication.rcu_service.modules.rcumodule.controller;
 
 
 
-import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.RCUCaseResponseDTO;
-import com.example.loanapplication.rcu_service.modules.rcumodule.enums.RCUStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.DocumentStatusDTO.DocumentStatusRequestDTO;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.WholeDocuementDTO.DocumentResponseDTO;
+import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.rcuDTOs.RCUCaseResponseDTO;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import com.example.loanapplication.rcu_service.modules.rcumodule.service.RCUService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,38 +67,38 @@ public class RCUController {
     RCUCaseResponseDTO rcuCaseResponseDTO = rcuService.AssignedRCUCase(UUID.fromString(rcuCaseId),UUID.fromString(assignedUserId));
     return ResponseEntity.status(HttpStatus.OK).body(rcuCaseResponseDTO);
     }
-    //Done
-//    @PostMapping("/cases/{rcuCaseId}/decision")
-//    ResponseEntity<String> RCUCaseDecisionMaking(@PathVariable String rcuCaseId){
-//        rcuService.RCUCaseDecisionMaking(UUID.fromString(rcuCaseId));
-//        return  ResponseEntity.status(HttpStatus.OK).body("Decision Making Done !");
-//    }
 
-    //METHODS WHICH ARE MORE RELATED TO DOCUMENTs PART
+    @PostMapping("/cases/{rcuCaseId}/decision")
+    ResponseEntity<String> RCUCaseDecisionMaking(@PathVariable String rcuCaseId){
+        rcuService.RCUCaseDecisionMaking(UUID.fromString(rcuCaseId));
+        return  ResponseEntity.status(HttpStatus.OK).body("Decision Making Done !");
+    }
+
+//    METHODS WHICH ARE MORE RELATED TO DOCUMENTs PART
+
+    @GetMapping("/documents/{documentId}")
+    ResponseEntity<DocumentResponseDTO> getDocument(@PathVariable String documentId){
+        DocumentResponseDTO documentResponseDTO = rcuService.getDocument(documentId);
+        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
+    }
+
     //Done
-//    @GetMapping("/documents/{documentId}")
-//    ResponseEntity<DocumentResponseDTO> getDocument(@PathVariable String documentId){
-//        DocumentResponseDTO documentResponseDTO = rcuService.getDocument(documentId);
-//        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
-//    }
-//
-//    //Done
-//    @PutMapping("/documents/{documentId}/status")
-//    ResponseEntity<DocumentResponseDTO> updateDocumentStatusAndRemarks(@PathVariable String documentId,@RequestBody DocumentStatusRequestDTO documentStatusRequestDTO){
-//       DocumentResponseDTO documentResponseDTO = rcuService.updateDocumentStatusAndRemarks(documentId,documentStatusRequestDTO);
-//        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
-//    }
-//    //Done
-//    @GetMapping("/documents/applicant/{applicantId}")
-//    ResponseEntity<List<DocumentResponseDTO>> getAllDocumentByApplicant(@PathVariable String applicantId){
-//        List<DocumentResponseDTO> documentResponseDTOList = rcuService.getAllDocumentByApplicant(applicantId);
-//        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTOList);
-//    }
-//    //Done
-//    @GetMapping("/loans/{loanId}/documents")
-//    ResponseEntity<List<DocumentResponseDTO>> getAllDOcumentByLoanId(@PathVariable String loanId){
-//        List<DocumentResponseDTO> documentResponseDTOList = rcuService.getAllDOcumentByLoanId(loanId);
-//        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTOList);
-//    }
+    @PutMapping("/documents/{documentId}/status")
+    ResponseEntity<DocumentResponseDTO> updateDocumentStatusAndRemarks(@PathVariable String documentId,@RequestBody DocumentStatusRequestDTO documentStatusRequestDTO){
+       DocumentResponseDTO documentResponseDTO = rcuService.updateDocumentStatusAndRemarks(documentId,documentStatusRequestDTO);
+        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
+    }
+    //Done
+    @GetMapping("/documents/applicant/{applicantId}")
+    ResponseEntity<List<DocumentResponseDTO>> getAllDocumentByApplicant(@PathVariable String applicantId){
+        List<DocumentResponseDTO> documentResponseDTOList = rcuService.getAllDocumentByApplicant(applicantId);
+        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTOList);
+    }
+    //Done
+    @GetMapping("/loans/{loanId}/documents")
+    ResponseEntity<List<DocumentResponseDTO>> getAllDOcumentByLoanId(@PathVariable String loanId){
+        List<DocumentResponseDTO> documentResponseDTOList = rcuService.getAllDOcumentByLoanId(loanId);
+        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTOList);
+    }
 
    }

@@ -1,6 +1,6 @@
 package com.example.loanapplication.rcu_service.modules.rcumodule.entity;
 
-import com.example.loanapplication.rcu_service.modules.rcumodule.enums.RCUStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,11 +1,10 @@
 package com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.impl;
 
-
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanApplicationNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageHistoryNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageTransitionNotAllowedException;
 import com.example.loanapplication.loan_service.external.services.AuthUserService;
-import com.example.loanapplication.loan_service.kafka.events.LoanStageHistoryEvent;
+import com.example.loanapplication.loan_service.external.services.DocumentService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.loanStageHistoryDTO.LoanStageHistoryRequestDTO;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.loanStageHistoryDTO.LoanStageHistoryResponseDTO;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.loanapplicationDTO.LoanApplicationRequestDTO;
@@ -20,7 +19,6 @@ import com.example.loanapplication.loan_service.modules.loanapplicationmodule.re
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.repository.LoanStageHistoryRepository;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.ApplicantService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.LoanApplicationService;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,44 +31,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final LoanStageHistoryRepository loanStageHistoryRepository;
-    //    private final UserService userService;
     private final ApplicantService applicantService;
-    //    private final DocumentService documentService;
-//    private final KafkaTemplate<String, Object> kafkaTemplate;
-
-    private final AuthUserService authUserService;
-//    public LoanApplicationServiceImpl(
-//            LoanApplicationRepository loanApplicationRepository,
-//            LoanStageHistoryRepository loanStageHistoryRepository,
-//            UserService userService,
-//            ApplicantService applicantService, DocumentService documentService, KafkaTemplate<String, Object> kafkaTemplate
-//    ) {
-//        this.loanApplicationRepository = loanApplicationRepository;
-//        this.loanStageHistoryRepository = loanStageHistoryRepository;
-//        this.userService = userService;
-//        this.applicantService = applicantService;
-//        this.documentService = documentService;
-//
-//        this.kafkaTemplate = kafkaTemplate;
-//    }
+//  private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final DocumentService documentService;
 
     public LoanApplicationServiceImpl(
             LoanApplicationRepository loanApplicationRepository,
             LoanStageHistoryRepository loanStageHistoryRepository,
-            UserService userService,
-            ApplicantService applicantService, AuthUserService authUserService
+
+            ApplicantService applicantService, AuthUserService authUserService, DocumentService documentService
     ) {
         this.loanApplicationRepository = loanApplicationRepository;
         this.loanStageHistoryRepository = loanStageHistoryRepository;
         this.applicantService = applicantService;
-        this.authUserService = authUserService;
-        this.userService = userService;
+        this.documentService = documentService;
     }
 
     @Override
     public LoanApplicationResponseDTO createLoanApplication(LoanApplicationRequestDTO loanApplicationRequestDTO) {
 
-       UUID userID = UUID.fromString(loanApplicationRequestDTO.getCreatedBy());
+        UUID userID = UUID.fromString(loanApplicationRequestDTO.getCreatedBy());
 
         LoanApplication loanApplication = LoanApplication.builder()
                 .loanType(LoanType.valueOf(loanApplicationRequestDTO.getLoanType()))
@@ -244,7 +224,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         LoanApplication loanApplication = loanApplicationRepository.findById(UUID.fromString(loanId)).orElseThrow(() -> new LoanApplicationNotFoundException("Loan Application Not found"));
         //while deleting the loan application its history, documents and applicant should be deleted
         deleteAllLoanStageHistoryByLoanId(loanId);
-//        documentService.deleteAllDocumentsByLoanId(UUID.fromString(loanId));
+        documentService.deleteAllDocumentsByLoanId(loanId);
         applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
         loanApplicationRepository.deleteById(loanApplication.getLoanID());
     }

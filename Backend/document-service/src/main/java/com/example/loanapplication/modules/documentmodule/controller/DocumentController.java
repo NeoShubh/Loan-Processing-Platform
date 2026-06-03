@@ -84,7 +84,4 @@ public class DocumentController {
         DocumentResponseDTO documentResponseDTO = documentService.updateDocumentStatus(documentId,documentStatusRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTO);
     }
-
-
-
 }

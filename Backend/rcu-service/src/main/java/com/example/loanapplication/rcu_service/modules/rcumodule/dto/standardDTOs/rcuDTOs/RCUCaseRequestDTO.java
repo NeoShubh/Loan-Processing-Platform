@@ -1,6 +1,6 @@
-package com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs;
+package com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.rcuDTOs;
 
-import com.example.loanapplication.rcu_service.modules.rcumodule.enums.RCUStatus;
+import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

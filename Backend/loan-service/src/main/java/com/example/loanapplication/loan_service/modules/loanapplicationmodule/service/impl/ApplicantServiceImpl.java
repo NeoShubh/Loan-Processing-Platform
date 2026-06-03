@@ -3,6 +3,7 @@ package com.example.loanapplication.loan_service.modules.loanapplicationmodule.s
 import com.example.loanapplication.loan_service.exception.applicant.ApplicantNotFoundException;
 import com.example.loanapplication.loan_service.exception.applicant.PrimaryApplicantaExists;
 
+import com.example.loanapplication.loan_service.external.services.DocumentService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.applicantDTO.ApplicantRequestDTO;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.applicantDTO.ApplicantResponseDTO;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.entity.Applicant;
@@ -21,14 +22,12 @@ import java.util.UUID;
 public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
-//    private final DocumentService documentService;
+    private final DocumentService documentService;
 
-//    public ApplicantServiceImpl(ApplicantRepository applicantRepository, DocumentService documentService) {
-//        this.applicantRepository = applicantRepository;
-//        this.documentService = documentService;
-//    }
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository) {
+
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository,DocumentService documentService) {
         this.applicantRepository = applicantRepository;
+        this.documentService = documentService;
     }
 
     @Override
@@ -104,13 +103,13 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public void deleteApplicantById(String ApplicantId) {
         Applicant applicant = applicantRepository.findById(UUID.fromString(ApplicantId)).orElseThrow(() -> new ApplicantNotFoundException("Applicant Not Found"));
-//        documentService.deleteAllDocumentsByApplicantId(UUID.fromString(ApplicantId));
+        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
         applicantRepository.deleteById(applicant.getApplicantId());
     }
 
     @Override
     public void deleteAllApplicantByLoanId(String loanId) {
-//        documentService.deleteAllDocumentsByLoanId(UUID.fromString(loanId));
+        documentService.deleteAllDocumentsByLoanId(loanId);
         long count = applicantRepository.deleteAllByLoanApplicationLoanID(UUID.fromString(loanId));
         if (count < 0) {
             throw new ApplicantNotFoundException("No Applicants found for this loan application");
