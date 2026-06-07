@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/documents")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -25,61 +25,61 @@ public class DocumentController {
         this.documentService = documentService;
     }
     @PreAuthorize("hasRole('RM')")
-    @PostMapping("/documents")
+    @PostMapping("")
     ResponseEntity<DocumentResponseDTO> createDocument(@RequestParam MultipartFile file, @RequestParam UUID loanApplicationId, @RequestParam UUID applicantId, @RequestParam String documentType, @RequestParam UUID UploadedBy){
         DocumentResponseDTO documentResponseDTO = documentService.createDocument(file, loanApplicationId, applicantId, documentType, UploadedBy);
         return ResponseEntity.status(HttpStatus.CREATED).body(documentResponseDTO);
     }
     @PreAuthorize("hasAnyRole('RM','CM','RCU')")
-    @GetMapping("/documents/{documentId}")
+    @GetMapping("/{documentId}")
     ResponseEntity<DocumentResponseDTO> getDocumentById(@PathVariable UUID documentId) {
         DocumentResponseDTO documentResponseDTO = documentService.getDocumentById(documentId);
         return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
     }
     @PreAuthorize("hasRole('RM')")
-    @PutMapping("/documents/{documentId}")
+    @PutMapping("/{documentId}")
     ResponseEntity<DocumentResponseDTO> updateDocument(@PathVariable UUID documentId, @RequestBody DocumentRequestDTO documentRequestDTO) {
         DocumentResponseDTO documentResponseDTO = documentService.updateDocument(documentId, documentRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTO);
     }
     @PreAuthorize("hasRole('RM')")
-    @DeleteMapping("/loans/{loanId}/documents")
+    @DeleteMapping("/loans/{loanId}")
     ResponseEntity<String> deleteAllDocumentsByLoanId(@PathVariable String loanId) {
         documentService.deleteAllDocumentsByLoanId(UUID.fromString(loanId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Content Deleted");
     }
     @PreAuthorize("hasRole('RM')")
-    @DeleteMapping("/loans/applicants/{applicantId}/documents")
+    @DeleteMapping("/loans/applicants/{applicantId}")
     ResponseEntity<String> deleteAllDocumentsByApplicantId(@PathVariable String applicantId) {
         documentService.deleteAllDocumentsByApplicantId(UUID.fromString(applicantId));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Content Deleted");
     }
     @PreAuthorize("hasRole('RM')")
-    @DeleteMapping("/documents/{documentId}")
+    @DeleteMapping("/{documentId}")
     ResponseEntity<String> deleteDocumentsById(@PathVariable UUID documentId) {
         documentService.deleteDocumentsById(documentId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Content Deleted");
     }
     @PreAuthorize("hasAnyRole('RM','CM','RCU')")
-    @GetMapping("/loans/{loanId}/documents")
+    @GetMapping("/loans/{loanId}")
     ResponseEntity<List<DocumentResponseDTO>> getAllDocumentsByLoanId(@PathVariable UUID loanId){
         List <DocumentResponseDTO> responesList = documentService.getAllDocumentsByLoanId(loanId);
         return ResponseEntity.status(HttpStatus.FOUND).body(responesList);
     }
     @PreAuthorize("hasAnyRole('RM','CM','RCU')")
-    @GetMapping("/loans/applicants/{applicantId}/documents")
+    @GetMapping("/loans/applicants/{applicantId}")
     ResponseEntity<List<DocumentResponseDTO>> getAllDocumentsByApplicantId(@PathVariable UUID applicantId){
         List <DocumentResponseDTO> responselist = documentService.getAllDocumentsByApplicantId(applicantId);
         return ResponseEntity.status(HttpStatus.FOUND).body(responselist);
     }
     @PreAuthorize("hasRole('RM')")
-    @PutMapping("/documents/{documentId}/file")
+    @PutMapping("/{documentId}/file")
     ResponseEntity<DocumentResponseDTO> updateDocumentFile(@PathVariable UUID documentId,@RequestParam MultipartFile file){
         DocumentResponseDTO documentResponseDTO = documentService.updateDocumentFile(documentId,file);
         return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTO);
     }
     @PreAuthorize("hasAnyRole('RM','CM','RCU')")
-    @PutMapping("/documents/{documentId}/status")
+    @PutMapping("/{documentId}/status")
     ResponseEntity<DocumentResponseDTO> updateDocumentStatus(@PathVariable String documentId ,@RequestBody DocumentStatusRequestDTO documentStatusRequestDTO){
         DocumentResponseDTO documentResponseDTO = documentService.updateDocumentStatus(documentId,documentStatusRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTO);
