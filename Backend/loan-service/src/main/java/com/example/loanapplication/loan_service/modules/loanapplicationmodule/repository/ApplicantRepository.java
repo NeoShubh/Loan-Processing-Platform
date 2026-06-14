@@ -14,6 +14,7 @@ import java.util.UUID;
 public interface ApplicantRepository extends JpaRepository<Applicant, UUID> {
     Long deleteAllByLoanApplicationLoanID(UUID loanID);
     List <Applicant> findByLoanApplicationLoanID(UUID loanID);
+//    List <Applicant> findByLoanID(UUID loanID);
 //    Optional <Applicant> findByLoanApplication_LoanIDAndApplicantType(UUID loanId, ApplicantType applicantType);
     Optional <Applicant> findByLoanApplication_LoanIDAndApplicantType(UUID loanID, ApplicantType applicantType);
     List<Applicant> findAllByLoanApplication_LoanIDAndApplicantType(UUID loanID, ApplicantType applicantType);

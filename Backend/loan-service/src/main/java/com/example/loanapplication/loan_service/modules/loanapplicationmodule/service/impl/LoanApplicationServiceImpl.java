@@ -20,6 +20,7 @@ import com.example.loanapplication.loan_service.modules.loanapplicationmodule.re
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.repository.LoanStageHistoryRepository;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.ApplicantService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.LoanApplicationService;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     @Override
     public LoanApplicationResponseDTO createLoanApplication(LoanApplicationRequestDTO loanApplicationRequestDTO) {
 
-        UUID userID = UUID.fromString(loanApplicationRequestDTO.getCreatedBy());
+        String userID = loanApplicationRequestDTO.getCreatedBy();
 
         LoanApplication loanApplication = LoanApplication.builder()
                 .loanType(LoanType.valueOf(loanApplicationRequestDTO.getLoanType()))
@@ -78,10 +79,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 .userID(String.valueOf(userID))
                 .loanStageHistoryRequestDTO(loanStageHistoryRequestDTO).build();
 
-        kafkaTemplate.send("loan-stage-history-events", loanStageHistoryEvent);
-        System.out.println("Event sent: " + loanStageHistoryEvent);
-        LoanStageHistoryResponseDTO loanStageHistoryResponseDTO =
-                createLoanStageHistory(String.valueOf(loanApplication.getLoanID()), String.valueOf(userID), loanStageHistoryRequestDTO);
+        System.out.println(loanStageHistoryEvent);
+        System.out.println("Before Kafka Send");
+
+        try {
+            kafkaTemplate.send("loan-stage-history-events", loanStageHistoryEvent);
+
+            System.out.println("MESSAGE SENT SUCCESSFULLY");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("After Kafka Send");
+//        LoanStageHistoryResponseDTO loanStageHistoryResponseDTO =
+//                createLoanStageHistory(String.valueOf(loanApplication.getLoanID()), String.valueOf(userID), loanStageHistoryRequestDTO);
 
 
         return LoanApplicationResponseDTO.builder()
@@ -97,9 +108,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
     @Override
     public List<LoanApplicationResponseDTO> getAllLoanApplicationByUserID(String userId) {
-
+//        System.out.println("we inside of get all loans by userID");
         List<LoanApplication> loansList =
-                loanApplicationRepository.findByCreatedBy(UUID.fromString(userId));
+                loanApplicationRepository.findByCreatedBy(userId);
 
         List<LoanApplicationResponseDTO> responseList = new ArrayList<>();
 
@@ -115,7 +126,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     .updatedAt(loan.getUpdatedAt())
                     .build());
         }
-
+//        System.out.println(responseList);
         return responseList;
     }
 
@@ -123,6 +134,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     @Override
     public LoanApplicationResponseDTO getLoanApplicationById(String loanId) {
         LoanApplication loanApplication = loanApplicationRepository.findById(UUID.fromString(loanId)).orElseThrow(() -> new LoanApplicationNotFoundException("Loan Application Not found"));
+//        System.out.println("the loan is found");
         return LoanApplicationResponseDTO.builder()
                 .loanID(loanApplication.getLoanID())
                 .loanType(loanApplication.getLoanType())
@@ -150,7 +162,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         }
 
         if (loanApplicationRequestDTO.getCreatedBy() != null) {
-            loanApplication.setCreatedBy(UUID.fromString(loanApplicationRequestDTO.getCreatedBy()));
+            loanApplication.setCreatedBy(loanApplicationRequestDTO.getCreatedBy());
         }
 
         loanApplicationRepository.save(loanApplication);
@@ -173,7 +185,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 loanApplicationRepository.findById(UUID.fromString(loanID))
                         .orElseThrow(() -> new LoanApplicationNotFoundException("Loan Application Not Found"));
 
-        UUID userID = loanApplication.getCreatedBy();
+        String userID = loanApplication.getCreatedBy();
 
         LoanStage oldStage = loanApplication.getLoanStage();
 
@@ -227,8 +239,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         LoanApplication loanApplication = loanApplicationRepository.findById(UUID.fromString(loanId)).orElseThrow(() -> new LoanApplicationNotFoundException("Loan Application Not found"));
         //while deleting the loan application its history, documents and applicant should be deleted
         deleteAllLoanStageHistoryByLoanId(loanId);
-        documentService.deleteAllDocumentsByLoanId(loanId);
-        applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
+//        documentService.deleteAllDocumentsByLoanId(loanId);
+//        applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
         loanApplicationRepository.deleteById(loanApplication.getLoanID());
     }
 
@@ -240,16 +252,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     //LOAN STAGE HISTORY
     @Override
     public LoanStageHistoryResponseDTO createLoanStageHistory(String loanApplicationID, String userID, LoanStageHistoryRequestDTO loanStageHistoryRequestDTO) {
-
+        System.out.println("creating the loan history");
         LoanStageHistory loanStageHistory = new LoanStageHistory();
 
         if (isLoanApplicationExists(loanApplicationID)) {
 
             LoanApplication loanApplication = LoanApplication.builder().loanID(UUID.fromString(loanApplicationID)).build();
-            UUID userId = UUID.fromString(userID);
+//            UUID userId = UUID.fromString(userID);
 
             loanStageHistory.setLoanApplication(loanApplication);
-            loanStageHistory.setChangedBy(userId);
+            loanStageHistory.setChangedBy(userID);
             loanStageHistory.setOldStage(loanStageHistoryRequestDTO.getOldStage());
             loanStageHistory.setCurrentStage(loanStageHistoryRequestDTO.getCurrentStage());
 
@@ -258,6 +270,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         } else {
             throw new LoanApplicationNotFoundException("Loan Application is not found.");
         }
+        System.out.println(loanStageHistory);
 
         return LoanStageHistoryResponseDTO.builder()
                 .loanStageHistoryId(loanStageHistory.getLoanStageHistoryId())
@@ -309,13 +322,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     }
 
     @Override
+    @Modifying
     @Transactional
     public void deleteAllLoanStageHistoryByLoanId(String LoanId) {
-        long count = loanStageHistoryRepository.deleteAllByLoanApplicationLoanID(UUID.fromString(LoanId));
-
-        if (count == 0) {
-            throw new LoanStageHistoryNotFoundException("No history found to delete");
-        }
+        Long count = loanStageHistoryRepository.deleteAllByLoanApplicationLoanID(UUID.fromString(LoanId));
+        //commenting this because if the histories are not present we must show no exception to stop the flow
+        //
+//        if (count == 0) {
+//            throw new LoanStageHistoryNotFoundException("No history found to delete");
+//        }
     }
 
     @Override
@@ -358,7 +373,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
         if (loanStageHistoryRequestDTO.getChangedBy() != null) {
             loanstageHistory.setChangedBy(
-                    UUID.fromString(loanStageHistoryRequestDTO.getChangedBy()));
+                    loanStageHistoryRequestDTO.getChangedBy());
         }
 
         loanStageHistoryRepository.save(loanstageHistory);

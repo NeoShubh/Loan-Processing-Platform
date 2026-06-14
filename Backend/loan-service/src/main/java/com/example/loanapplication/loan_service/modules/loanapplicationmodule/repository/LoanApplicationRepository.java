@@ -7,9 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
+
 @Repository
 public interface LoanApplicationRepository extends JpaRepository<LoanApplication, UUID> {
 
-    List<LoanApplication> findByCreatedBy(UUID userID);
+    List<LoanApplication> findByCreatedBy(String userID);
     boolean existsByLoanID(UUID loanID);
 }
+

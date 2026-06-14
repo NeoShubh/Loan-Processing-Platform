@@ -23,7 +23,7 @@ public class Applicant {
     private UUID applicantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loan_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    @JoinColumn(name = "loan_id", nullable = false)
     private LoanApplication loanApplication;
 
     private String name;

@@ -1,4 +1,17 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+#    consumer:
+#      group-id: loan-stage-history-group
+#      auto-offset-reset: earliest
+#
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#
+#      properties:
+#        spring.json.trusted.packages: "com.example.loanapplication.loan_service.kafka.events"
+#        spring.json.value.default.type: com.example.loanapplication.loan_service.kafka.events.LoanStageHistoryEvent
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
@@ -16,6 +29,9 @@ spring:
 server:
   port: '4002'
 
+logging:
+  level:
+    org.springframework.kafka: DEBUG
 
 eureka:
   instance:

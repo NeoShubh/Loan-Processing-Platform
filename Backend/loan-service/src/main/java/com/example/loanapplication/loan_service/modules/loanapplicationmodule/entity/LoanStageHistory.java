@@ -24,8 +24,8 @@ public class LoanStageHistory {
     private UUID loanStageHistoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loan_id", nullable = false, columnDefinition = "VARCHAR(36)")
-    private LoanApplication loanApplication; //loan application can have more than one history So to track it we will have this relationship as many to one
+    @JoinColumn(name = "loan_id", nullable = false)
+    private LoanApplication loanApplication;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "old_stage")
@@ -37,7 +37,7 @@ public class LoanStageHistory {
 
 
     @Column(name = "changed_by", nullable = false, columnDefinition = "VARCHAR(36)")
-    private UUID changedBy;
+    private String changedBy;
 
     @Column(name = "changed_at")
     private LocalDateTime changedAt;

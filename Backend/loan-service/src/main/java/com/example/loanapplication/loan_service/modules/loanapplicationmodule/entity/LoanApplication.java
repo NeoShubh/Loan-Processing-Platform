@@ -38,7 +38,7 @@ public class LoanApplication {
     private CreditStatus creditStatus;
 
     @Column(name = "created_by", nullable = false, columnDefinition = "VARCHAR(36)")
-    private UUID createdBy;
+    private String createdBy;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -1,6 +1,7 @@
 package com.example.loanapplication.loan_service.exception;
 
 import com.example.loanapplication.loan_service.exception.applicant.ApplicantNotFoundException;
+import com.example.loanapplication.loan_service.exception.applicant.PrimaryApplicantaExists;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanApplicationNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageHistoryNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageTransitionNotAllowedException;
@@ -28,8 +29,11 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
-
-
+    @ExceptionHandler(PrimaryApplicantaExists.class)
+    public ResponseEntity<ApiError> HandlePrimaryApplicantaExists(PrimaryApplicantaExists ex) {
+        ApiError apiError = new ApiError(ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
 
 
     @ExceptionHandler(LoanStageHistoryNotFoundException.class)

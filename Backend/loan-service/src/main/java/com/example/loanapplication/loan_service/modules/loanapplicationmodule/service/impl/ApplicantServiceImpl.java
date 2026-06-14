@@ -2,7 +2,6 @@ package com.example.loanapplication.loan_service.modules.loanapplicationmodule.s
 
 import com.example.loanapplication.loan_service.exception.applicant.ApplicantNotFoundException;
 import com.example.loanapplication.loan_service.exception.applicant.PrimaryApplicantaExists;
-
 import com.example.loanapplication.loan_service.external.services.DocumentService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.applicantDTO.ApplicantRequestDTO;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.dto.applicantDTO.ApplicantResponseDTO;
@@ -11,7 +10,11 @@ import com.example.loanapplication.loan_service.modules.loanapplicationmodule.en
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.enums.ApplicantType;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.repository.ApplicantRepository;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.ApplicantService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +26,19 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     private final ApplicantRepository applicantRepository;
     private final DocumentService documentService;
+    private static final Logger log =
+            LoggerFactory.getLogger(ApplicantServiceImpl.class);
 
-
-    public ApplicantServiceImpl(ApplicantRepository applicantRepository,DocumentService documentService) {
+    public ApplicantServiceImpl(ApplicantRepository applicantRepository, DocumentService documentService) {
         this.applicantRepository = applicantRepository;
         this.documentService = documentService;
     }
 
     @Override
     public ApplicantResponseDTO createApplicant(ApplicantRequestDTO applicantRequestDTO) {
-
+        log.info("Creating applicant");
         UUID loanId = UUID.fromString(applicantRequestDTO.getLoanApplication());
+        System.out.println(loanId);
 
         if (applicantRequestDTO.getApplicantType() == ApplicantType.PRIMARY) {
 
@@ -45,27 +50,28 @@ public class ApplicantServiceImpl implements ApplicantService {
                 throw new PrimaryApplicantaExists("Primary applicant already exists for this loan");
             }
         }
-
         Applicant applicant = new Applicant();
         applicant.setLoanApplication(LoanApplication.builder().loanID(UUID.fromString(applicantRequestDTO.getLoanApplication())).build());
         applicant.setName(applicantRequestDTO.getName());
         applicant.setPanNumber(applicantRequestDTO.getPanNumber());
         applicant.setAddress(applicantRequestDTO.getAddress());
         applicant.setApplicantType(applicantRequestDTO.getApplicantType());
-        applicantRepository.save(applicant);
+        Applicant savedApplicant = applicantRepository.save(applicant);
+
         return ApplicantResponseDTO.builder()
-                .applicantId(applicant.getApplicantId())
-                .loanApplication(applicant.getLoanApplication().getLoanID())
-                .name(applicant.getName())
-                .panNumber(applicant.getPanNumber())
-                .address(applicant.getAddress())
-                .applicantType(applicant.getApplicantType())
-                .createdAt(applicant.getCreatedAt())
+                .applicantId(savedApplicant.getApplicantId())
+                .loanApplication(savedApplicant.getLoanApplication().getLoanID())
+                .name(savedApplicant.getName())
+                .panNumber(savedApplicant.getPanNumber())
+                .address(savedApplicant.getAddress())
+                .applicantType(savedApplicant.getApplicantType())
+                .createdAt(savedApplicant.getCreatedAt())
                 .build();
     }
 
     @Override
     public ApplicantResponseDTO updateApplicant(String ApplicantId, ApplicantRequestDTO applicantRequestDTO) {
+        System.out.println(ApplicantId);
         Applicant applicant = applicantRepository.findById(UUID.fromString(ApplicantId)).orElseThrow(() -> new ApplicantNotFoundException("Applicant Not Found"));
 
 
@@ -103,15 +109,18 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public void deleteApplicantById(String ApplicantId) {
         Applicant applicant = applicantRepository.findById(UUID.fromString(ApplicantId)).orElseThrow(() -> new ApplicantNotFoundException("Applicant Not Found"));
-        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
+//        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
         applicantRepository.deleteById(applicant.getApplicantId());
     }
 
+    @Transactional
+    @Modifying
     @Override
     public void deleteAllApplicantByLoanId(String loanId) {
-        documentService.deleteAllDocumentsByLoanId(loanId);
+//        documentService.deleteAllDocumentsByLoanId(loanId);
+        System.out.println(loanId);
         long count = applicantRepository.deleteAllByLoanApplicationLoanID(UUID.fromString(loanId));
-        if (count < 0) {
+        if (count == 0) {
             throw new ApplicantNotFoundException("No Applicants found for this loan application");
         }
     }

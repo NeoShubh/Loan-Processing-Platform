@@ -20,6 +20,6 @@ public class LoanStageHistoryResponseDTO {
     private UUID loanApplicationId;
     private LoanStage oldStage;
     private LoanStage currentStage;
-    private UUID changedBy;
+    private String changedBy;
     private LocalDateTime changedAt;
 }

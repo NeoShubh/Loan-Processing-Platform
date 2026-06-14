@@ -24,7 +24,7 @@ public class LoanApplicationResponseDTO {
     private LoanStage loanStage;
     private RCUStatus rcuStatus;
     private CreditStatus creditStatus;
-    private UUID createdBy;
+    private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
