@@ -68,6 +68,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentResponseDTO getDocumentById(UUID documentId) {
+
         Document document = documentRepository.findById(documentId).orElseThrow(() -> new DocumentNotFoundException("Document is not available"));
         return DocumentResponseDTO.builder()
                 .documentId(document.getDocumentId())
@@ -86,9 +87,10 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentResponseDTO> getAllDocumentsByLoanId(UUID loanId) {
+
         List<Document> documents = documentRepository.findAllByLoanId(loanId);
         List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
-        System.out.println("DTO DOC COUNT: " + documents.size());
+
         for (int i = 0; i < documents.size(); i++) {
             DocumentResponseDTO singleDocumentResponseDTO = DocumentResponseDTO.builder()
                     .documentId(documents.get(i).getDocumentId())
@@ -113,8 +115,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional(readOnly = true)
     @Override
     public List<Document> getDocumentsByLoanId(UUID loanId) {
+
         List<Document> documents = documentRepository.findAllByLoanId(loanId);
-        System.out.println("ENTITY DOC COUNT: " + documents.size());
         return documents;
     }
 
@@ -186,6 +188,9 @@ public class DocumentServiceImpl implements DocumentService {
         if (!file.getContentType().equals("application/pdf")) {
             throw new DocumentFormatNotAllowedException("Only PDF format is allowed");
         }
+
+//        if(document.getFileUrl().equals(file.) )
+
         //deleting the previous one
         fileStorageService.deleteFile(document.getFileUrl());
         //uploading the new one
@@ -212,6 +217,7 @@ public class DocumentServiceImpl implements DocumentService {
     //mainly used by RCU user
     @Override
     public DocumentResponseDTO updateDocumentStatus(String documentId, DocumentStatusRequestDTO documentStatusRequestDTO) {
+
         Document document = documentRepository.findById(UUID.fromString(documentId)).orElseThrow(() -> new DocumentNotFoundException("Document is not available"));
 
         if (documentStatusRequestDTO.getVerifiedBy() != null) {

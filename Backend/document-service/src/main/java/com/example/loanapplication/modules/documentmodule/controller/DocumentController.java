@@ -34,7 +34,7 @@ public class DocumentController {
     @GetMapping("/{documentId}")
     ResponseEntity<DocumentResponseDTO> getDocumentById(@PathVariable UUID documentId) {
         DocumentResponseDTO documentResponseDTO = documentService.getDocumentById(documentId);
-        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTO);
     }
     @PreAuthorize("hasRole('RM')")
     @PutMapping("/{documentId}")
@@ -64,13 +64,13 @@ public class DocumentController {
     @GetMapping("/loans/{loanId}")
     ResponseEntity<List<DocumentResponseDTO>> getAllDocumentsByLoanId(@PathVariable UUID loanId){
         List <DocumentResponseDTO> responesList = documentService.getAllDocumentsByLoanId(loanId);
-        return ResponseEntity.status(HttpStatus.FOUND).body(responesList);
+        return ResponseEntity.status(HttpStatus.OK).body(responesList);
     }
     @PreAuthorize("hasAnyRole('RM','CM','RCU')")
     @GetMapping("/loans/applicants/{applicantId}")
     ResponseEntity<List<DocumentResponseDTO>> getAllDocumentsByApplicantId(@PathVariable UUID applicantId){
         List <DocumentResponseDTO> responselist = documentService.getAllDocumentsByApplicantId(applicantId);
-        return ResponseEntity.status(HttpStatus.FOUND).body(responselist);
+        return ResponseEntity.status(HttpStatus.OK).body(responselist);
     }
     @PreAuthorize("hasRole('RM')")
     @PutMapping("/{documentId}/file")

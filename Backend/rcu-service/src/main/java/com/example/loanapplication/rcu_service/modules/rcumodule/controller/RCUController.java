@@ -33,12 +33,14 @@ public class RCUController {
        RCUCaseResponseDTO rcuCaseResponseDTO = rcuService.CreateRCUCase(UUID.fromString(loanId));
         return ResponseEntity.status(HttpStatus.CREATED).body(rcuCaseResponseDTO);
     }
+    //Done
     @PreAuthorize("hasAnyRole('RCU')")
     @GetMapping("/cases/{rcuCaseId}/getCase")
     ResponseEntity<RCUCaseResponseDTO>  getRCUCase(@PathVariable String rcuCaseId){
         RCUCaseResponseDTO rcuCaseResponseDTO = rcuService.getRCUCase(UUID.fromString(rcuCaseId));
         return ResponseEntity.status(HttpStatus.FOUND).body(rcuCaseResponseDTO);
     }
+    //Done
     @PreAuthorize("hasAnyRole('RM', 'RCU')")
     @GetMapping("/loans/{loanID}")
     ResponseEntity<RCUCaseResponseDTO> getRCUCaseByLoanID(@PathVariable UUID loanID){
@@ -67,22 +69,21 @@ public class RCUController {
     RCUCaseResponseDTO rcuCaseResponseDTO = rcuService.AssignedRCUCase(UUID.fromString(rcuCaseId),UUID.fromString(assignedUserId));
     return ResponseEntity.status(HttpStatus.OK).body(rcuCaseResponseDTO);
     }
-
+    //PENDING
     @PostMapping("/cases/{rcuCaseId}/decision")
     ResponseEntity<String> RCUCaseDecisionMaking(@PathVariable String rcuCaseId){
         rcuService.RCUCaseDecisionMaking(UUID.fromString(rcuCaseId));
         return  ResponseEntity.status(HttpStatus.OK).body("Decision Making Done !");
     }
 
-//    METHODS WHICH ARE MORE RELATED TO DOCUMENTs PART
-
+    //Done
     @GetMapping("/documents/{documentId}")
     ResponseEntity<DocumentResponseDTO> getDocument(@PathVariable String documentId){
         DocumentResponseDTO documentResponseDTO = rcuService.getDocument(documentId);
         return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTO);
     }
 
-    //Done
+    //DONE
     @PutMapping("/documents/{documentId}/status")
     ResponseEntity<DocumentResponseDTO> updateDocumentStatusAndRemarks(@PathVariable String documentId,@RequestBody DocumentStatusRequestDTO documentStatusRequestDTO){
        DocumentResponseDTO documentResponseDTO = rcuService.updateDocumentStatusAndRemarks(documentId,documentStatusRequestDTO);
@@ -98,7 +99,7 @@ public class RCUController {
     @GetMapping("/loans/{loanId}/documents")
     ResponseEntity<List<DocumentResponseDTO>> getAllDOcumentByLoanId(@PathVariable String loanId){
         List<DocumentResponseDTO> documentResponseDTOList = rcuService.getAllDOcumentByLoanId(loanId);
-        return ResponseEntity.status(HttpStatus.FOUND).body(documentResponseDTOList);
+        return ResponseEntity.status(HttpStatus.OK).body(documentResponseDTOList);
     }
 
    }

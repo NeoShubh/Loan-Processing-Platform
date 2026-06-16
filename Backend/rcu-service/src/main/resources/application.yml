@@ -3,9 +3,19 @@ spring:
     name: rcu-service
   data:
     mongodb:
-      database: rcu_db
-      port: '27017'
       host: localhost
+      port: 27017
+      database: rcu_db
+      uuid-representation: standard
+#spring:
+#  application:
+#    name: rcu-service
+#  data:
+#    mongodb:
+#      uuid-representation: standard
+#      database: rcu_db
+#      port: '27017'
+#      host: localhost
 server:
   port: '4004'
 

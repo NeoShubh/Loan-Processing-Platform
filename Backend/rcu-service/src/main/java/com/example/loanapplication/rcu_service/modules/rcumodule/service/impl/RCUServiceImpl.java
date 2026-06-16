@@ -29,36 +29,36 @@ public class RCUServiceImpl implements RCUService {
         this.documentService = documentService;
     }
 
-
-
     @Override
     public RCUCaseResponseDTO CreateRCUCase(UUID loanId) {
-        if (CheckRCUCaseExistsForLoanId(loanId, RCUStatus.PENDING)) {
-            return null; // skip duplicate
-        }
-        if (CheckRCUCaseExistsForLoanId(loanId, RCUStatus.PENDING)) {
-            throw new ActiveRCUCaseFoundException("The current RCU Case should be closed with either 'Approved' or 'Rejected'");
-        }
-        // 👉 Idempotency check FIRST
-        if (CheckRCUCaseExistsForLoanId(loanId, RCUStatus.PENDING)) {
-            return null; // or just return existing / skip
+//        System.out.println(loanId);
+        boolean exists =
+                CheckRCUCaseExistsForLoanId(loanId, RCUStatus.PENDING);
+
+        if (exists) {
+            throw new ActiveRCUCaseFoundException(
+                    "The current RCU Case should be closed with either Approved or Rejected"
+            );
         }
 
         RCUCase rcuCase = new RCUCase();
 
+        rcuCase.setRcuCaseId(UUID.randomUUID());
         rcuCase.setLoanId(loanId);
         rcuCase.setRcuStatus(RCUStatus.PENDING);
-        rcuCase.setAssignedTo(null);
 
-        rcuCaseRepository.save(rcuCase);
+        RCUCase savedCase = rcuCaseRepository.save(rcuCase);
+
+//        System.out.println("Saved successfully");
+//        System.out.println(savedCase);
         return RCUCaseResponseDTO.builder()
-                .rcuCaseId(rcuCase.getRcuCaseId())
-                .loan(rcuCase.getLoanId())
-                .rcuStatus(rcuCase.getRcuStatus())
-                .assignedTo(rcuCase.getAssignedTo() != null ? rcuCase.getAssignedTo() : null)
-                .updatedAt(rcuCase.getUpdatedAt())
-                .createdAt(rcuCase.getCreatedAt())
-                .closedAt(rcuCase.getClosedAt())
+                .rcuCaseId(savedCase.getRcuCaseId())
+                .loan(savedCase.getLoanId())
+                .rcuStatus(savedCase.getRcuStatus())
+                .assignedTo(savedCase.getAssignedTo() != null ? savedCase.getAssignedTo() : null)
+                .updatedAt(savedCase.getUpdatedAt())
+                .createdAt(savedCase.getCreatedAt())
+                .closedAt(savedCase.getClosedAt())
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class RCUServiceImpl implements RCUService {
     @Override
     public RCUCaseResponseDTO getRCUCase(UUID rcuCaseId) {
         RCUCase rcuCase = rcuCaseRepository.findById(rcuCaseId).orElseThrow(() -> new RCUCaseNotPresentException("RCU case is not present"));
-        System.out.println("RCU ID: " + rcuCaseId);
+//        System.out.println("RCU ID: " + rcuCaseId);
         return RCUCaseResponseDTO.builder()
                 .rcuCaseId(rcuCase.getRcuCaseId())
                 .loan(rcuCase.getLoanId())
@@ -95,7 +95,7 @@ public class RCUServiceImpl implements RCUService {
                 .loan(rcuCase.getLoanId())
                 .rcuStatus(rcuCase.getRcuStatus())
                 .assignedTo(rcuCase.getAssignedTo() != null ?
-                        rcuCase.getAssignedTo(): null)
+                        rcuCase.getAssignedTo() : null)
                 .updatedAt(rcuCase.getUpdatedAt())
                 .createdAt(rcuCase.getCreatedAt())
                 .closedAt(rcuCase.getClosedAt())
@@ -106,20 +106,30 @@ public class RCUServiceImpl implements RCUService {
     @Override
     public DocumentResponseDTO updateDocumentStatusAndRemarks(String documentId, DocumentStatusRequestDTO documentStatusRequestDTO) {
         return documentService.updateDocumentStatus(documentId, documentStatusRequestDTO).getBody();
+
     }
 
     @Override
     public DocumentResponseDTO getDocument(String documentId) {
+        try {
+//            System.out.println(documentService.getDocumentById(UUID.fromString(documentId)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return documentService.getDocumentById(UUID.fromString(documentId)).getBody();
+
     }
+
 
     @Override
     public List<DocumentResponseDTO> getAllDocumentByApplicant(String applicantId) {
         return documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId)).getBody();
+
     }
 
     @Override
     public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
+
         List<DocumentResponseDTO> documents = documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getBody();
         List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
 
@@ -196,6 +206,7 @@ public class RCUServiceImpl implements RCUService {
 
     @Override
     public void RCUCaseDecisionMaking(UUID rcuCaseId) {
+//        System.out.println("are we making decision");
         RCUCase rcuCase = rcuCaseRepository.findById(rcuCaseId).orElseThrow(() ->
                 new RCUCaseNotPresentException("RCU Case Not Found"));
 
@@ -222,8 +233,29 @@ public class RCUServiceImpl implements RCUService {
 
     @Override
     public boolean CheckRCUCaseExistsForLoanId(UUID loanId, RCUStatus rcuStatus) {
-        return rcuCaseRepository.existsByLoanIdAndRcuStatus(loanId, rcuStatus);
+
+//        System.out.println("INSIDE CheckRCUCaseExistsForLoanId");
+
+        try {
+            boolean result =
+                    rcuCaseRepository.existsByLoanIdAndRcuStatus(
+                            loanId,
+                            rcuStatus
+                    );
+
+//            System.out.println("RESULT = " + result);
+
+            return result;
+
+        } catch (Exception e) {
+
+//            System.out.println("ERROR INSIDE REPOSITORY CALL");
+            e.printStackTrace();
+
+            throw e;
+        }
     }
+
 
 
 }
