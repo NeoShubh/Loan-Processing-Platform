@@ -349,3 +349,130 @@ Pending:
 * Monitoring and Logging Improvements
 * Production Deployment
 * Containerization and CI/CD Setup
+
+Important Integration Flows
+
+**Loan Creation
+**
+Loan Service
+     ↓
+Create Loan Application
+     ↓
+Kafka Event Published
+     ↓
+Loan Stage History Consumer
+     ↓
+Initial Loan Stage History Created
+
+**Loan Stage Change**
+
+RM Changes Stage
+     ↓
+Loan Service
+     ↓
+Publish LoanStageChangedEvent
+     ↓
+Kafka Topic
+     ↓
+RCU Consumer
+     ↓
+Create RCU Case
+
+
+**Document Verification Flow**
+
+RM Uploads Documents
+     ↓
+Document Service Stores Documents
+     ↓
+RCU User Opens RCU Case
+     ↓
+RCU Service Calls Document Service (Feign)
+     ↓
+Documents Displayed
+     ↓
+RCU Verifies Each Document
+     ↓
+Document Status Updated
+     ↓
+RCU Decision Engine
+     ↓
+Final Case Decision
+     ↓
+Loan Application Updated
+
+
+
+| Method | Endpoint                                   | Role | Purpose                                                              |
+| ------ | ------------------------------------------ | ---- | -------------------------------------------------------------------- |
+| POST   | `/api/loans/applicants`                    | RM   | Create a new applicant (Primary or Secondary) for a loan application |
+| PUT    | `/api/loans/applicants/{ApplicantId}`      | RM   | Update applicant details                                             |
+| DELETE | `/api/loans/applicants/{ApplicantId}`      | RM   | Delete a specific applicant                                          |
+| DELETE | `/api/loans/{LoanId}/applicants`           | RM   | Delete all applicants linked to a loan                               |
+| GET    | `/api/loans/applicants/{ApplicantId}`      | RM   | Fetch applicant details by Applicant ID                              |
+| GET    | `/api/loans/{loanId}/applicants/primary`   | RM   | Fetch primary applicant of a loan                                    |
+| GET    | `/api/loans/{loanId}/applicants/secondary` | RM   | Fetch all secondary applicants of a loan                             |
+| GET    | `/api/loans/{loanId}/applicants`           | RM   | Fetch all applicants linked to a loan                                |
+
+
+| Method | Endpoint                                      | Role | Purpose                                                                                                        |
+| ------ | --------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------- |
+| POST   | `/api/loans`                                  | RM   | Create a new loan application                                                                                  |
+| GET    | `/api/loans/user/{userId}`                    | RM   | Get all loan applications created by a user                                                                    |
+| GET    | `/api/loans/{loanId}`                         | RM   | Fetch loan application details by Loan ID                                                                      |
+| PUT    | `/api/loans/{loanId}`                         | RM   | Update loan application details                                                                                |
+| PUT    | `/api/loans/{loanId}/stage?loanStage={stage}` | RM   | Update loan processing stage. Also publishes Kafka events for Loan Stage History and downstream services (RCU) |
+| DELETE | `/api/loans/{loanId}`                         | RM   | Delete a loan application                                                                                      |
+| GET    | `/api/loans/{loanId}/exists`                  | RM   | Check whether a loan application exists                                                                        |
+
+
+| Method | Endpoint                                     | Role        | Purpose                                            |
+| ------ | -------------------------------------------- | ----------- | -------------------------------------------------- |
+| POST   | `/api/loans/{loanId}/{userId}/users/history` | RM, CM, RCU | Create a loan stage history record                 |
+| GET    | `/api/loans/{loanId}/history`                | RM, CM, RCU | Fetch complete stage transition history for a loan |
+| GET    | `/api/loans/history/{loanStageHistoryId}`    | RM, CM, RCU | Fetch a specific loan stage history record         |
+| PUT    | `/api/loans/history/{loanStageHistoryId}`    | RM, CM, RCU | Update a loan stage history record                 |
+| DELETE | `/api/loans/history/{loanStageHistoryId}`    | RM, CM, RCU | Delete a specific stage history record             |
+| DELETE | `/api/loans/{loanId}/history`                | RM, CM, RCU | Delete all stage history records for a loan        |
+
+
+| Method | Endpoint                                        | Role        | Purpose                                                     |
+| ------ | ----------------------------------------------- | ----------- | ----------------------------------------------------------- |
+| POST   | `/api/documents`                                | RM          | Upload a new document for an applicant and loan application |
+| GET    | `/api/documents/{documentId}`                   | RM, CM, RCU | Fetch document details by Document ID                       |
+| PUT    | `/api/documents/{documentId}`                   | RM          | Update document metadata                                    |
+| PUT    | `/api/documents/{documentId}/file`              | RM          | Replace uploaded document file                              |
+| PUT    | `/api/documents/{documentId}/status`            | RM, CM, RCU | Update document verification status and remarks             |
+| DELETE | `/api/documents/{documentId}`                   | RM          | Delete a document                                           |
+| DELETE | `/api/documents/loans/{loanId}`                 | RM          | Delete all documents associated with a loan                 |
+| DELETE | `/api/documents/loans/applicants/{applicantId}` | RM          | Delete all documents associated with an applicant           |
+| GET    | `/api/documents/loans/{loanId}`                 | RM, CM, RCU | Retrieve all documents belonging to a loan                  |
+| GET    | `/api/documents/loans/applicants/{applicantId}` | RM, CM, RCU | Retrieve all documents belonging to an applicant            |
+
+
+| Method | Endpoint                                               | Role    | Purpose                                                                 |
+| ------ | ------------------------------------------------------ | ------- | ----------------------------------------------------------------------- |
+| POST   | `/api/rcu/cases/{loanId}`                              | RCU     | Create a new RCU case for a loan                                        |
+| GET    | `/api/rcu/cases/{rcuCaseId}/getCase`                   | RCU     | Retrieve RCU case details                                               |
+| GET    | `/api/rcu/loans/{loanId}`                              | RM, RCU | Retrieve RCU case using Loan ID                                         |
+| DELETE | `/api/rcu/cases/{rcuCaseId}`                           | RCU     | Delete an RCU case                                                      |
+| PUT    | `/api/rcu/cases/{rcuCaseId}/status?rcuStatus={status}` | RCU     | Update RCU case status                                                  |
+| PUT    | `/api/rcu/cases/{rcuCaseId}/assign/{assignedUserId}`   | RCU     | Assign RCU case to a specific RCU user                                  |
+| POST   | `/api/rcu/cases/{rcuCaseId}/decision`                  | RCU     | Calculate and finalize overall RCU decision based on document decisions |
+
+
+| Method | Endpoint                                     | Purpose                                         |
+| ------ | -------------------------------------------- | ----------------------------------------------- |
+| GET    | `/api/rcu/documents/{documentId}`            | Fetch a document for review                     |
+| PUT    | `/api/rcu/documents/{documentId}/status`     | Update document verification status and remarks |
+| GET    | `/api/rcu/documents/applicant/{applicantId}` | Fetch all documents of an applicant             |
+| GET    | `/api/rcu/loans/{loanId}/documents`          | Fetch all documents belonging to a loan         |
+
+
+| Method | Endpoint                   | Purpose                   |
+| ------ | -------------------------- | ------------------------- |
+| GET    | `/api/users/email/{email}` | Fetch user by email       |
+| GET    | `/api/users/{userID}`      | Fetch user by User ID     |
+| PUT    | `/api/users/{userID}`      | Update user information   |
+| DELETE | `/api/users/email/{email}` | Delete user using email   |
+| DELETE | `/api/users/id/{userID}`   | Delete user using User ID |
