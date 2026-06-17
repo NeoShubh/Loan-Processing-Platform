@@ -17,15 +17,9 @@ public class LoanStageHistoryKafkaConsumer {
         this.loanApplicationService = loanApplicationService;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        System.out.println("🔥🔥🔥 LoanStageHistoryKafkaConsumer Loaded 🔥🔥🔥");
-//    }
     @KafkaListener(topics = "loan-stage-history-events", groupId = "loan-stage-history-group-test")
     public void consume(LoanStageHistoryEvent event) {
-//
-//        System.out.println("🔥 LISTENER HIT 🔥");
-//        System.out.println(event);
+
 
         try {
             System.out.println("👉 BEFORE DB CALL");

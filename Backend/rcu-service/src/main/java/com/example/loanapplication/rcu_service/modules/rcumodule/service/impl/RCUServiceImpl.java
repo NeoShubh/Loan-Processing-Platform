@@ -31,6 +31,7 @@ public class RCUServiceImpl implements RCUService {
 
     @Override
     public RCUCaseResponseDTO CreateRCUCase(UUID loanId) {
+        System.out.println("CREATING RCU CASE FOR = " + loanId);
 //        System.out.println(loanId);
         boolean exists =
                 CheckRCUCaseExistsForLoanId(loanId, RCUStatus.PENDING);

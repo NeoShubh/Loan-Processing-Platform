@@ -109,7 +109,8 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Override
     public void deleteApplicantById(String ApplicantId) {
         Applicant applicant = applicantRepository.findById(UUID.fromString(ApplicantId)).orElseThrow(() -> new ApplicantNotFoundException("Applicant Not Found"));
-//        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
+        System.out.println("deleting APPlicant by applicant ID");
+        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
         applicantRepository.deleteById(applicant.getApplicantId());
     }
 
@@ -117,7 +118,8 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Modifying
     @Override
     public void deleteAllApplicantByLoanId(String loanId) {
-//        documentService.deleteAllDocumentsByLoanId(loanId);
+        System.out.println("deleting APPlicant by loan ID");
+        documentService.deleteAllDocumentsByLoanId(loanId);
         System.out.println(loanId);
         long count = applicantRepository.deleteAllByLoanApplicationLoanID(UUID.fromString(loanId));
         if (count == 0) {

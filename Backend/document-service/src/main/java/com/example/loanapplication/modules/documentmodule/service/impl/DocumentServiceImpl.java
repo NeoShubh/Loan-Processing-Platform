@@ -257,6 +257,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional
     @Override
     public void deleteAllDocumentsByLoanId(UUID loanId) {
+        System.out.println("deleteAllDocumentsByLoanId");
         long count = documentRepository.deleteAllByLoanId(loanId);
 
         if (count == 0) {
@@ -267,6 +268,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional
     @Override
     public void deleteAllDocumentsByApplicantId(UUID applicantId) {
+        System.out.println("deleteAllDocumentsByApplicantId");
         long count = documentRepository.deleteAllByApplicantId(applicantId);
 
         if (count == 0) {

@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient("RCU-SERVICE")
 public interface RCUService {
-    @PostMapping("/cases/{loanId}")
-    ResponseEntity<RCUCaseResponseDTO> CreateRCUCase(@PathVariable String loanId);
+//    @PostMapping("/api/rcu/cases/{loanId}")
+//    ResponseEntity<RCUCaseResponseDTO> CreateRCUCase(@PathVariable String loanId);
 }

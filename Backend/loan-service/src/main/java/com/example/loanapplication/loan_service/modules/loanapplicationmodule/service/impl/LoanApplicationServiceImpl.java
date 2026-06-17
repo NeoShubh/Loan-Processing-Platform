@@ -108,7 +108,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
     @Override
     public List<LoanApplicationResponseDTO> getAllLoanApplicationByUserID(String userId) {
-//        System.out.println("we inside of get all loans by userID");
+
         List<LoanApplication> loansList =
                 loanApplicationRepository.findByCreatedBy(userId);
 
@@ -126,7 +126,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     .updatedAt(loan.getUpdatedAt())
                     .build());
         }
-//        System.out.println(responseList);
+
         return responseList;
     }
 
@@ -201,11 +201,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         loanApplicationRepository.save(loanApplication);
 
 //// THEN publish events
-        kafkaTemplate.send("loan-stage-events",
-                new LoanStageChangedEvent(
-                        loanApplication.getLoanID(),
-                        loanStage.name()
-                ));
+        LoanStageChangedEvent evt = new LoanStageChangedEvent(
+                loanApplication.getLoanID(),
+                loanStage.name()
+        );
+        System.out.println("SENDING EVENT = " + evt);
+        kafkaTemplate.send("loan-stage-events", evt);
 
         LoanStageHistoryRequestDTO request = LoanStageHistoryRequestDTO.builder()
                 .loanApplicationId(String.valueOf(loanApplication.getLoanID()))
@@ -240,7 +241,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         //while deleting the loan application its history, documents and applicant should be deleted
         deleteAllLoanStageHistoryByLoanId(loanId);
 //        documentService.deleteAllDocumentsByLoanId(loanId);
-//        applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
+        applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
         loanApplicationRepository.deleteById(loanApplication.getLoanID());
     }
 

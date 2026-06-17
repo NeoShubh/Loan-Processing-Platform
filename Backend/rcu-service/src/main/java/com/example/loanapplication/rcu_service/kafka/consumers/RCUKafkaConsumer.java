@@ -13,13 +13,25 @@ public class RCUKafkaConsumer {
     @Autowired
     private RCUService rcuService;
 
-    @KafkaListener(topics = "loan-stage-events", groupId = "rcu-group")
+    @KafkaListener(
+            topics = "loan-stage-events",
+            groupId = "rcu-group"
+    )
     public void consume(LoanStageChangedEvent event) {
 
-        System.out.println("Received event: " + event);
+        System.out.println("Received event : " + event);
 
-        if (event.getStage().equals("CREDIT_EVALUATION")) {
-            rcuService.CreateRCUCase(event.getLoanId());
+        try {
+
+            if ("CREDIT_EVALUATION".equals(event.getStage())) {
+
+                rcuService.CreateRCUCase(event.getLoanId());
+
+                System.out.println("RCU CASE CREATED");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -10,12 +10,12 @@ import java.util.UUID;
 @FeignClient("DOCUMENT-SERVICE")
 public interface DocumentService {
 
-    @DeleteMapping("/loans/{loanId}/documents")
+    @DeleteMapping("/api/documents/loans/{loanId}")
     ResponseEntity<String> deleteAllDocumentsByLoanId(@PathVariable String loanId);
 //    documentService.deleteAllDocumentsByLoanId(UUID.fromString(loanId));
 
 
-    @DeleteMapping("/loans/applicants/{applicantId}/documents")
+    @DeleteMapping("/api/documents/loans/applicants/{applicantId}")
     ResponseEntity<String> deleteAllDocumentsByApplicantId(@PathVariable String applicantId);
 //    documentService.deleteAllDocumentsByApplicantId(UUID.fromString(ApplicantId));
 }
