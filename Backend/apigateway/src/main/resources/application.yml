@@ -28,6 +28,16 @@ spring:
               uri: lb://LOAN-SERVICE
               predicates:
                 - Path=/api/loans/**
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+
+rate-limit:
+  capacity: 20
+  refill-rate: 5
+
 eureka:
   instance:
     prefer-ip-address: true
