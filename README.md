@@ -401,7 +401,61 @@ Final Case Decision
      ↓
 Loan Application Updated
 
+# Starting Redis using Docker
 
+Redis image is downloaded using **Docker Desktop**.
+
+Before starting Redis:
+- Open **Docker Desktop**.
+- Make sure Docker is running (Whale icon should be active).
+
+---
+
+## Start Redis Container
+
+Run:
+
+```bash
+docker start redis-local
+```
+
+---
+
+## Verify Redis is Running
+
+Run:
+
+```bash
+docker exec -it redis-local redis-cli ping
+```
+
+Expected output:
+
+```text
+PONG
+```
+
+---
+
+## Stop Redis Container
+
+When not needed, stop Redis:
+
+```bash
+docker stop redis-local
+```
+
+---
+
+## Check Running Containers
+
+To check active Docker containers:
+
+```bash
+docker ps
+```
+
+This shows whether `redis-local` is running before starting your application.
 
 | Method | Endpoint                                   | Role | Purpose                                                              |
 | ------ | ------------------------------------------ | ---- | -------------------------------------------------------------------- |
