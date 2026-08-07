@@ -21,6 +21,7 @@ public class RedisRateLimiter {
     private double refillRate;
 
     public RedisRateLimiter(StringRedisTemplate redisTemplate) {
+        System.out.println("changes being made brother");
         this.redisTemplate = redisTemplate;
         this.tokenBucketScript = new DefaultRedisScript<>();
         this.tokenBucketScript.setLocation(new ClassPathResource("scripts/token_bucket.lua"));
