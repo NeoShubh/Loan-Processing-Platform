@@ -246,6 +246,48 @@ Advantages:
 
 ---
 
+# Communication Between Services
+
+## Synchronous Communication
+
+Services communicate using **Feign**:
+
+```text
+RCU Service
+    ↓ Feign
+Document Service
+```
+
+```text
+Loan Application Module
+    ↓ Feign
+Document Service
+```
+
+```text
+Loan Module
+    ↓ Feign
+Document Service
+```
+
+---
+
+## Asynchronous Communication
+
+Services communicate using **Kafka**:
+
+```text
+Loan Service
+    ↓ Kafka
+RCU Service
+```
+
+```text
+Loan Service
+    ↓ Kafka
+Loan Application History
+```
+
 ## 8. Kafka Event Flow
 
 ### Loan Stage History Creation
