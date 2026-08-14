@@ -1,29 +1,52 @@
 spring:
   application:
     name: rcu-service
+
   data:
     mongodb:
       host: localhost
       port: 27017
       database: rcu_db
       uuid-representation: standard
-#spring:
-#  application:
-#    name: rcu-service
-#  data:
-#    mongodb:
-#      uuid-representation: standard
-#      database: rcu_db
-#      port: '27017'
-#      host: localhost
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      documentService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:  health, metrics, circuitbreakerevents
+
+  endpoint:
+    health:
+      show-details: always
+
 server:
-  port: '4004'
+  port: 4004
 
 eureka:
   instance:
     prefer-ip-address: true
+
   client:
-    fetch-registery: true
+    fetch-registry: true
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:4005/eureka

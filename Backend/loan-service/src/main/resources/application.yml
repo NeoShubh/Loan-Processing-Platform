@@ -30,6 +30,19 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
 
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:  health, metrics, circuitbreakerevents
+
+  endpoint:
+    health:
+      show-details: always
+
 #  retry:
 #    instances:
 #      documentService:
@@ -37,7 +50,7 @@ resilience4j:
 #        wait-duration: 1s
 
 server:
-  port: '4002'
+  port: 4002
 
 logging:
   level:

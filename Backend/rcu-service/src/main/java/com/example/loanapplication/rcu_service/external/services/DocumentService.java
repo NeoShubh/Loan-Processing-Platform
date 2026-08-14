@@ -1,6 +1,7 @@
 package com.example.loanapplication.rcu_service.external.services;
 
 import com.example.loanapplication.rcu_service.external.FeinClient.interceptor.FeignInterceptorConfig;
+import com.example.loanapplication.rcu_service.external.fallbacks.DocumentServiceFallback;
 import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.DocumentStatusDTO.DocumentStatusRequestDTO;
 import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.WholeDocuementDTO.DocumentResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name= "DOCUMENT-SERVICE", configuration = FeignInterceptorConfig.class)
+@FeignClient(name= "DOCUMENT-SERVICE", configuration = FeignInterceptorConfig.class,  fallback = DocumentServiceFallback.class)
 public interface DocumentService {
 
     @GetMapping("/api/documents/loans/{loanId}")
