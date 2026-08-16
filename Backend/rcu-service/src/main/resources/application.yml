@@ -25,6 +25,7 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
 
+
 management:
   health:
     circuitbreakers:
@@ -32,8 +33,7 @@ management:
   endpoints:
     web:
       exposure:
-        include:  health, metrics, circuitbreakerevents
-
+        include: health,info,metrics
   endpoint:
     health:
       show-details: always
