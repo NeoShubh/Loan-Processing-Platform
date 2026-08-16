@@ -453,7 +453,12 @@ Before starting Redis:
 - Make sure Docker is running (Whale icon should be active).
 
 ---
+## Start kafka server and zookeeper 
+## Start Zookeeper
 
+```bash
+cd C:\kafka_2.12-3.6.2
+bin\windows\zookeeper-server-start.bat config\zookeeper.properties
 ## Start Redis Container
 
 Run:
@@ -479,6 +484,15 @@ PONG
 ```
 
 ---
+| Service      | Port |
+| ------------ | ---: |
+| Zookeeper    | 2181 |
+| Kafka        | 9092 |
+| Loan Service | 4002 |
+| RCU Service  | 4004 |
+| Eureka       | 4005 |
+| API Gateway  | 4006 |
+| Redis        | 6379 |
 
 ## Stop Redis Container
 
