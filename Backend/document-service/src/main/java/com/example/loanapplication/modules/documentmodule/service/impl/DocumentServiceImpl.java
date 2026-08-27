@@ -34,6 +34,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentResponseDTO createDocument(MultipartFile file, UUID loanApplicationId, UUID applicantId, String documentType, UUID uploadedBy) {
+//        System.out.println("we entered into the document service ");
         if (!file.getContentType().equals("application/pdf")) {
             throw new DocumentFormatNotAllowedException("Only PDF format is allowed");
         }

@@ -130,7 +130,7 @@ public class RCUServiceImpl implements RCUService {
 
     @Override
     public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
-
+//        System.out.println("We are good brother");
         List<DocumentResponseDTO> documents = documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getBody();
         List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
 
