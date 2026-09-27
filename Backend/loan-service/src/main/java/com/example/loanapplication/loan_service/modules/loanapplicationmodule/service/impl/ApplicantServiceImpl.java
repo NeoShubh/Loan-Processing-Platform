@@ -1,5 +1,6 @@
 package com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.impl;
 
+import com.example.loanapplication.loan_service.exception.ServerErrorExceptions.ServiceUnavailableException;
 import com.example.loanapplication.loan_service.exception.applicant.ApplicantNotFoundException;
 import com.example.loanapplication.loan_service.exception.applicant.PrimaryApplicantaExists;
 import com.example.loanapplication.loan_service.external.services.DocumentService;
@@ -13,6 +14,7 @@ import com.example.loanapplication.loan_service.modules.loanapplicationmodule.se
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,7 +112,15 @@ public class ApplicantServiceImpl implements ApplicantService {
     public void deleteApplicantById(String ApplicantId) {
         Applicant applicant = applicantRepository.findById(UUID.fromString(ApplicantId)).orElseThrow(() -> new ApplicantNotFoundException("Applicant Not Found"));
         System.out.println("deleting APPlicant by applicant ID");
-        documentService.deleteAllDocumentsByApplicantId(ApplicantId);
+        ResponseEntity<String> response =
+                documentService.deleteAllDocumentsByApplicantId(ApplicantId);
+
+        if (response.getStatusCode().is5xxServerError()) {
+            throw new ServiceUnavailableException(
+                    "Document Service is unavailable");
+        }
+
+
         applicantRepository.deleteById(applicant.getApplicantId());
     }
 

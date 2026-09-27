@@ -1,5 +1,6 @@
 package com.example.loanapplication.loan_service.exception;
 
+import com.example.loanapplication.loan_service.exception.ServerErrorExceptions.ServiceUnavailableException;
 import com.example.loanapplication.loan_service.exception.applicant.ApplicantNotFoundException;
 import com.example.loanapplication.loan_service.exception.applicant.PrimaryApplicantaExists;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanApplicationNotFoundException;
@@ -47,7 +48,14 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<String> handleServiceUnavailable(
+            ServiceUnavailableException ex) {
 
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ex.getMessage());
+    }
 
     @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
     public ResponseEntity<?> handleAccessDenied() {

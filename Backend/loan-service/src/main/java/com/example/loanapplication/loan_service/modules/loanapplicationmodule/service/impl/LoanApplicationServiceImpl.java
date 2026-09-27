@@ -1,5 +1,6 @@
 package com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.impl;
 
+import com.example.loanapplication.loan_service.exception.ServerErrorExceptions.ServiceUnavailableException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanApplicationNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageHistoryNotFoundException;
 import com.example.loanapplication.loan_service.exception.loanapplication.LoanStageTransitionNotAllowedException;
@@ -21,6 +22,7 @@ import com.example.loanapplication.loan_service.modules.loanapplicationmodule.re
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.ApplicantService;
 import com.example.loanapplication.loan_service.modules.loanapplicationmodule.service.LoanApplicationService;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -237,11 +239,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     @Transactional
     @Override
     public void deleteLoanApplication(String loanId) {
-        LoanApplication loanApplication = loanApplicationRepository.findById(UUID.fromString(loanId)).orElseThrow(() -> new LoanApplicationNotFoundException("Loan Application Not found"));
-        //while deleting the loan application its history, documents and applicant should be deleted
+
+        LoanApplication loanApplication = loanApplicationRepository
+                .findById(UUID.fromString(loanId))
+                .orElseThrow(() -> new LoanApplicationNotFoundException(
+                        "Loan Application Not found"));
+
+        ResponseEntity<String> response =
+                documentService.deleteAllDocumentsByLoanId(loanId);
+
+        if (response.getStatusCode().is5xxServerError()) {
+            throw new ServiceUnavailableException(
+                    "Document Service is unavailable");
+        }
+
         deleteAllLoanStageHistoryByLoanId(loanId);
-//        documentService.deleteAllDocumentsByLoanId(loanId);
-        applicantService.deleteAllApplicantByLoanId(String.valueOf(loanApplication.getLoanID()));
+        applicantService.deleteAllApplicantByLoanId(
+                String.valueOf(loanApplication.getLoanID()));
         loanApplicationRepository.deleteById(loanApplication.getLoanID());
     }
 

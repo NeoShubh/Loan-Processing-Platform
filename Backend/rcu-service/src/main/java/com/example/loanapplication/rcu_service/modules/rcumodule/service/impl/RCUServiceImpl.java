@@ -12,6 +12,7 @@ import com.example.loanapplication.rcu_service.modules.rcumodule.enums.document.
 import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import com.example.loanapplication.rcu_service.modules.rcumodule.repository.RCUCaseRepository;
 import com.example.loanapplication.rcu_service.modules.rcumodule.service.RCUService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,40 +107,54 @@ public class RCUServiceImpl implements RCUService {
 
 
     @Override
-    public DocumentResponseDTO updateDocumentStatusAndRemarks(String documentId, DocumentStatusRequestDTO documentStatusRequestDTO) {
-        if (documentService.updateDocumentStatus(documentId, documentStatusRequestDTO).getStatusCode().is5xxServerError()) {
-            throw new ServiceUnavailableException("Document Service is unavailable");
-        }
-        return documentService.updateDocumentStatus(documentId, documentStatusRequestDTO).getBody();
+    public DocumentResponseDTO updateDocumentStatusAndRemarks(
+            String documentId,
+            DocumentStatusRequestDTO documentStatusRequestDTO) {
 
+        ResponseEntity<DocumentResponseDTO> response =
+                documentService.updateDocumentStatus(documentId, documentStatusRequestDTO);
+
+        if (response.getStatusCode().is5xxServerError()) {
+            throw new ServiceUnavailableException(
+                    "Document Service is unavailable");
+        }
+
+        return response.getBody();
     }
 
     @Override
     public DocumentResponseDTO getDocument(String documentId) {
-        if (documentService.getDocumentById(UUID.fromString(documentId)).getStatusCode().is5xxServerError()) {
-            throw new ServiceUnavailableException("Document Service is unavailable");
+        ResponseEntity<DocumentResponseDTO> response =
+                documentService.getDocumentById(UUID.fromString(documentId));
+        if (response.getStatusCode().is5xxServerError()) {
+            throw new ServiceUnavailableException(
+                    "Document Service is unavailable");
         }
-        return documentService.getDocumentById(UUID.fromString(documentId)).getBody();
+        return response.getBody();
 
     }
 
 
     @Override
     public List<DocumentResponseDTO> getAllDocumentByApplicant(String applicantId) {
-        if (documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId)).getStatusCode().is5xxServerError()) {
+            ResponseEntity<List<DocumentResponseDTO>> response =  documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId));
+        if (response.getStatusCode().is5xxServerError()) {
             throw new ServiceUnavailableException("Document Service is unavailable");
         }
-        return documentService.getAllDocumentsByApplicantId(UUID.fromString(applicantId)).getBody();
+        return response.getBody();
 
     }
 
     @Override
     public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
-//
-        if (documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getStatusCode().is5xxServerError()) {
+
+        ResponseEntity<List<DocumentResponseDTO>> response =  documentService.getAllDocumentsByApplicantId(UUID.fromString(loanId));
+        if (response.getStatusCode().is5xxServerError()) {
             throw new ServiceUnavailableException("Document Service is unavailable");
         }
-        List<DocumentResponseDTO> documents = documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getBody();
+
+
+        List<DocumentResponseDTO> documents = response.getBody();
         List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
 
         for (int i = 0; i < documents.size(); i++) {
@@ -223,10 +238,11 @@ public class RCUServiceImpl implements RCUService {
             throw new RCUStatusCanNotBeChangedException("RCU User not assigned");
         }
         System.out.println("Loan ID in RCU : " + rcuCase.getLoanId());
-        if (documentService.getAllDocumentsByLoanId(rcuCase.getLoanId()).getStatusCode().is5xxServerError()) {
-            throw new ServiceUnavailableException("Document Service is unavailable");
-        }
-        List<DocumentResponseDTO> documentList = documentService.getAllDocumentsByLoanId(rcuCase.getLoanId()).getBody();
+        ResponseEntity<List<DocumentResponseDTO>> response =  documentService.getAllDocumentsByLoanId(rcuCase.getLoanId());
+            if(response.getStatusCode().is5xxServerError()){
+                throw new ServiceUnavailableException("The document service is not available");
+            }
+        List<DocumentResponseDTO> documentList =response.getBody();
         System.out.print(documentList);
         if (documentList.isEmpty()) {
             throw new RCUDocumentsNotFoundException("Documents List for RCU case are not Found");
