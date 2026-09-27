@@ -1,6 +1,7 @@
 package com.example.loanapplication.rcu_service.modules.rcumodule.service.impl;
 
 
+import com.example.loanapplication.rcu_service.exception.ServerErrorExceptions.ServiceUnavailableException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.*;
 import com.example.loanapplication.rcu_service.external.services.DocumentService;
 import com.example.loanapplication.rcu_service.modules.rcumodule.dto.standardDTOs.documentDTOs.DocumentStatusDTO.DocumentStatusRequestDTO;
@@ -11,6 +12,7 @@ import com.example.loanapplication.rcu_service.modules.rcumodule.enums.document.
 import com.example.loanapplication.rcu_service.modules.rcumodule.enums.rcu.RCUStatus;
 import com.example.loanapplication.rcu_service.modules.rcumodule.repository.RCUCaseRepository;
 import com.example.loanapplication.rcu_service.modules.rcumodule.service.RCUService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -130,7 +132,11 @@ public class RCUServiceImpl implements RCUService {
 
     @Override
     public List<DocumentResponseDTO> getAllDOcumentByLoanId(String loanId) {
-//        System.out.println("We are good brother");
+//
+       if( documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getStatusCode().is5xxServerError())
+       {
+           throw new ServiceUnavailableException("Document Service is unavailable");
+       }
         List<DocumentResponseDTO> documents = documentService.getAllDocumentsByLoanId(UUID.fromString(loanId)).getBody();
         List<DocumentResponseDTO> documentResponseList = new ArrayList<>();
 

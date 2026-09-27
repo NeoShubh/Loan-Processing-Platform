@@ -1,6 +1,7 @@
 package com.example.loanapplication.rcu_service.exception;
 
 
+import com.example.loanapplication.rcu_service.exception.ServerErrorExceptions.ServiceUnavailableException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseIsNotAssignedException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUCaseNotPresentException;
 import com.example.loanapplication.rcu_service.exception.rcuCase.RCUDocumentsNotFoundException;
@@ -52,7 +53,14 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<String> handleServiceUnavailable(
+            ServiceUnavailableException ex) {
 
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ex.getMessage());
+    }
     @ExceptionHandler(RCUStatusCanNotBeChangedException.class)
     public ResponseEntity<?> RCUStatusCanNotBeChangedException(RCUStatusCanNotBeChangedException ex) {
         ApiError apiError = new ApiError(ex.getMessage());

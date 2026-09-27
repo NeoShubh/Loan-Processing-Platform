@@ -26,6 +26,7 @@ public class DocumentServiceFallback implements DocumentService {
 
     @Override
     public ResponseEntity<List<DocumentResponseDTO>> getAllDocumentsByApplicantId(UUID applicantId) {
+        System.out.println("🔥 DOCUMENT SERVICE FALLBACK CALLED");
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Collections.emptyList());

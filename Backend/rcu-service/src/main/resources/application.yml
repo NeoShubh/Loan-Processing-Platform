@@ -14,16 +14,36 @@ spring:
       circuitbreaker:
         enabled: true
 
+#We gave common config for all CBs here we can change based on our Read/Write traffic rate
 resilience4j:
   circuitbreaker:
-    instances:
-      DocumentServicegetAllDocumentsByLoanIdUUID:
+    configs:
+      default:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 10
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
+
+    instances:
+      DocumentServicegetAllDocumentsByLoanIdUUID:
+        base-config: default
+
+      DocumentServicegetAllDocumentsByApplicantIdUUID:
+        base-config: default
+
+      DocumentServicegetDocumentByIdUUID:
+        base-config: default
+
+      DocumentServicedeleteAllDocumentsByLoanIdString:
+        base-config: default
+
+      DocumentServicedeleteAllDocumentsByApplicantIdString:
+        base-config: default
+
+      DocumentServiceupdateDocumentStatusString:
+        base-config: default
 
 management:
   health:
@@ -32,7 +52,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,circuitbreakers
   endpoint:
     health:
       show-details: always
