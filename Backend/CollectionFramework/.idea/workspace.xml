@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ccd20d17-08f9-4dd3-9e7a-a91512be4595" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/exception/ServerErrorExceptions/ServiceUnavailableException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/external/fallbacks/DocumentServiceFallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/external/fallbacks/DocumentServiceFallback.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/modules/rcumodule/service/impl/RCUServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../rcu-service/src/main/java/com/example/loanapplication/rcu_service/modules/rcumodule/service/impl/RCUServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rcu-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../rcu-service/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
