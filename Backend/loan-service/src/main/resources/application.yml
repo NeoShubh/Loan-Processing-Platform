@@ -21,14 +21,21 @@ spring:
         enabled: true
 resilience4j:
   circuitbreaker:
-    instances:
-      documentService:
+    configs:
+      default:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 10
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
+
+    instances:
+      DocumentServicedeleteAllDocumentsByLoanIdString:
+        base-config: default
+
+      DocumentServicedeleteAllDocumentsByApplicantIdString:
+        base-config: default
 
 management:
   health:
@@ -37,7 +44,7 @@ management:
   endpoints:
     web:
       exposure:
-        include:  health, metrics, circuitbreakerevents
+        include:  health, metrics,circuitbreakers, circuitbreakerevents
 
   endpoint:
     health:
@@ -60,7 +67,7 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
-    fetch-registery: true
+    fetch-registry: true
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:4005/eureka
