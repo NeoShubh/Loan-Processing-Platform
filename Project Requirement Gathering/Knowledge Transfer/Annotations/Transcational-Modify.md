@@ -1,0 +1,8 @@
+@Transactional deep dive (sparked by your deleteLoanApplication code)
+What it does: wraps a method's DB operations into one all-or-nothing unit — if any step fails, everything rolls back, preventing half-deleted/corrupted data.
+Why your delete flow needed it: without it, each repository call auto-commits independently — a failure partway through (e.g., loan record delete fails after history and applicants are already gone) leaves orphaned data with no way to undo it.
+@Modifying queries need an active transaction to run at all — missing @Transactional is likely what caused your earlier error (No EntityManager with actual transaction available).
+Propagation default is REQUIRED: inner methods called from an already-@Transactional outer method just join the existing transaction — they don't need their own @Transactional for that specific call chain to work.
+But inner methods should often keep @Transactional anyway — not for this call path, but so they're safe to call independently from elsewhere (a controller, a job, another service) where no outer transaction exists.
+Self-invocation gotcha: @Transactional works via Spring proxies. Calling this.someMethod() from within the same class bypasses the proxy — Spring can't intercept it. Doesn't break your current flow (the outer transaction already covers it), but it's a classic follow-up question in interviews about why @Transactional sometimes silently doesn't apply.
+Your proposed structure — @Transactional only on the outer deleteLoanApplication, stripped from inner calls in the same chain — is architecturally clean: one transaction boundary, one entry point.
